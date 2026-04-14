@@ -15,6 +15,11 @@ async function main() {
 
   const input: ContainerInput = JSON.parse(inputData)
 
+  if (!process.env.ANTHROPIC_API_KEY) {
+    process.stderr.write('Error: ANTHROPIC_API_KEY environment variable is not set\n')
+    process.exit(1)
+  }
+
   const client = new Anthropic()
 
   process.stdout.write('---STREAM_START---\n')
@@ -33,13 +38,15 @@ Be concise and friendly.`,
     betas: ['computer-use-2025-01-24'],
   })
 
-  for await (const event of stream) {
-    if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
-      process.stdout.write(event.delta.text)
+  try {
+    for await (const event of stream) {
+      if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+        process.stdout.write(event.delta.text)
+      }
     }
+  } finally {
+    process.stdout.write('\n---STREAM_END---\n')
   }
-
-  process.stdout.write('\n---STREAM_END---\n')
 }
 
 main().catch((err) => {
