@@ -2,6 +2,9 @@ import Database from 'better-sqlite3'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
+interface SessionRow { id: string; container_id: string | null }
+interface MessageRow { role: string; content: string }
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const DB_PATH = path.join(__dirname, '../../data/vibe.db')
 
@@ -26,8 +29,8 @@ export function createSession(id: string): void {
   db.prepare('INSERT INTO sessions (id, created_at) VALUES (?, ?)').run(id, Date.now())
 }
 
-export function getSession(id: string): { id: string; container_id: string | null } | undefined {
-  return db.prepare('SELECT * FROM sessions WHERE id = ?').get(id) as any
+export function getSession(id: string): SessionRow | undefined {
+  return db.prepare('SELECT id, container_id FROM sessions WHERE id = ?').get(id) as SessionRow | undefined
 }
 
 export function setContainerId(sessionId: string, containerId: string): void {
@@ -40,6 +43,6 @@ export function saveMessage(sessionId: string, role: 'user' | 'agent', content: 
   )
 }
 
-export function getMessages(sessionId: string): Array<{ role: string; content: string }> {
-  return db.prepare('SELECT role, content FROM messages WHERE session_id = ? ORDER BY created_at ASC').all(sessionId) as any
+export function getMessages(sessionId: string): MessageRow[] {
+  return db.prepare('SELECT role, content FROM messages WHERE session_id = ? ORDER BY created_at ASC').all(sessionId) as MessageRow[]
 }
