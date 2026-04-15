@@ -41,6 +41,11 @@ export async function runAgentInContainer(
   }
 
   await new Promise<void>((resolve) => {
+    const timeout = setTimeout(() => {
+      settle(() => onError(new Error('Container timed out after 60s')))
+      resolve()
+    }, 60_000)
+
     container.modem.demuxStream(
       stream,
       // stdout
@@ -77,11 +82,13 @@ export async function runAgentInContainer(
     )
 
     stream.on('end', () => {
+      clearTimeout(timeout)
       settle(onDone)
       resolve()
     })
 
     stream.on('error', (err: Error) => {
+      clearTimeout(timeout)
       settle(() => onError(err))
       resolve()
     })
