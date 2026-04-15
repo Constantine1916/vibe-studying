@@ -1,3 +1,5 @@
+# Note: the Claude agent Docker image (vibe-studying-agent) is built separately
+# and spawned dynamically by the backend via dockerode — it is not a compose service.
 services:
   backend:
     build:
@@ -9,8 +11,8 @@ services:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
     volumes:
       - ./data:/app/data
+      # Docker socket required: backend spawns agent containers dynamically
       - /var/run/docker.sock:/var/run/docker.sock
-    depends_on: []
 
   frontend:
     build:
@@ -18,3 +20,5 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5173:5173"
+    depends_on:
+      - backend
