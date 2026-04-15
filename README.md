@@ -36,7 +36,7 @@ vibe-studying/
 │   │       ├── useWebSocket.ts  # WS 连接 + 消息管理
 │   │       └── useVrm.ts        # VRM 动画状态机
 │   └── public/
-│       └── model.vrm            # VRM 模型文件（不纳入版本控制）
+│       └── model.vrm            # VRM 示例模型（已包含在仓库中）
 ├── backend/           # Node.js 后端
 │   └── src/
 │       ├── index.ts             # 入口
@@ -77,25 +77,14 @@ cp .env.example .env
 # 编辑 .env，填入你的 Anthropic API Key
 ```
 
-### 3. 准备 VRM 模型
-
-把任意 `.vrm` 文件放到 `frontend/public/model.vrm`。
-
-可以从 [VRoid Hub](https://hub.vroid.com) 下载免费模型，或用以下命令获取示例模型：
-
-```bash
-curl -L "https://github.com/pixiv/three-vrm/raw/dev/packages/three-vrm/examples/models/VRM1_Constraint_Twist_Sample.vrm" \
-  -o frontend/public/model.vrm
-```
-
-### 4. 构建 Agent 镜像
+### 3. 构建 Agent 镜像
 
 ```bash
 cd agent
 docker build -t vibe-studying-agent .
 ```
 
-### 5. 启动
+### 4. 启动
 
 **方式一：本地开发模式**
 
@@ -118,6 +107,8 @@ docker compose up
 ```
 
 打开 http://localhost:5173
+
+> **自定义角色**：把任意 `.vrm` 文件替换 `frontend/public/model.vrm` 即可换角色。可以从 [VRoid Hub](https://hub.vroid.com) 下载或用 [VRoid Studio](https://vroid.com/studio) 自己制作。
 
 ## 工作原理
 
